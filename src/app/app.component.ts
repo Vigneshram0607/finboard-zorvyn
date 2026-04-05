@@ -1,13 +1,21 @@
-import { Component } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { Component, OnInit, HostListener } from '@angular/core';
+
 
 @Component({
   selector: 'app-root',
-  standalone: true,
-  imports: [RouterOutlet],
-  templateUrl: './app.component.html',
+  templateUrl:'./app.component.html',
   styleUrl: './app.component.scss'
 })
-export class AppComponent {
-  title = 'finboard-zorvyn';
+export class AppComponent implements OnInit {
+  sidebarOpen = false;
+  isDark = true;
+
+  constructor(
+   
+  ) {}
+
+  ngOnInit(): void {
+  }
+
+ 
 }
