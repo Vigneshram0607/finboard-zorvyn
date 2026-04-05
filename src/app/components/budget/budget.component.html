@@ -1,0 +1,94 @@
+<div class="budget-page" [class.standalone]="standalone">
+
+  <!-- Page Header (only when used as full page) -->
+  <div class="page-header" *ngIf="standalone">
+    <div>
+      <h1 class="page-title">Budgets</h1>
+      <p class="page-sub">Set monthly spending limits and track progress</p>
+    </div>
+  </div>
+
+  <!-- Budget Section -->
+  <div class="budget-section">
+    <div class="budget-header">
+      <div>
+        <h3 class="section-title">Monthly Budgets</h3>
+        <p class="section-sub">Track spending limits by category</p>
+      </div>
+      <button *ngIf="isAdmin" class="btn btn-secondary btn-sm" (click)="showForm = !showForm">
+        <svg-icon name="plus" style="width:14px;height:14px"></svg-icon>
+        Set Budget
+      </button>
+    </div>
+
+    <!-- Add Budget Form -->
+    <div class="budget-form-wrap" *ngIf="showForm && isAdmin">
+      <form [formGroup]="form" (ngSubmit)="submitBudget()" class="budget-form">
+        <select formControlName="category" class="budget-select">
+          <option *ngFor="let c of expenseCategories" [value]="c">{{ CATEGORY_LABELS[c] }}</option>
+        </select>
+        <div class="budget-amount-wrap">
+          <span class="budget-rupee">₹</span>
+          <input type="number" formControlName="limit" placeholder="Limit" min="1" class="budget-input" />
+        </div>
+        <button type="submit" class="btn btn-primary btn-sm" [disabled]="form.invalid">Save</button>
+        <button type="button" class="btn btn-ghost btn-sm" (click)="showForm = false">Cancel</button>
+      </form>
+    </div>
+
+    <!-- Budget Items -->
+    <div class="budget-list" *ngIf="budgetStatuses.length; else noBudgets">
+      <div
+        class="budget-item"
+        *ngFor="let b of budgetStatuses"
+        [class.over]="b.isOver"
+        [class.warning]="!b.isOver && b.percentage >= 80"
+      >
+        <div class="budget-item-header">
+          <span class="budget-cat">{{ CATEGORY_LABELS[b.category] }}</span>
+          <div class="budget-amounts">
+            <span class="budget-spent" [class.over]="b.isOver">₹{{ b.spent.toLocaleString('en-IN') }}</span>
+            <span class="budget-sep">/</span>
+            <span class="budget-limit">₹{{ b.limit.toLocaleString('en-IN') }}</span>
+          </div>
+        </div>
+        <div class="budget-bar-bg">
+          <div
+            class="budget-bar-fill"
+            [style.width.%]="Math.min(b.percentage, 100)"
+            [style.background]="getBarColor(b)"
+          ></div>
+        </div>
+        <div class="budget-item-footer">
+          <span class="budget-pct" [class.over]="b.isOver" [class.warning]="!b.isOver && b.percentage >= 80">
+            {{ b.percentage }}% used
+          </span>
+          <span class="budget-remaining" *ngIf="!b.isOver && b.percentage < 80">
+            ₹{{ b.remaining.toLocaleString('en-IN') }} remaining
+          </span>
+          <span class="budget-warning" *ngIf="!b.isOver && b.percentage >= 80">
+            ⚠ Almost at limit
+          </span>
+          <span class="budget-over-msg" *ngIf="b.isOver">
+            Over by ₹{{ (b.spent - b.limit).toLocaleString('en-IN') }}
+          </span>
+          <button *ngIf="isAdmin" class="remove-btn" (click)="removeBudget(b.category)" title="Remove budget">
+            <svg-icon name="x" style="width:11px;height:11px"></svg-icon>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <ng-template #noBudgets>
+      <div class="no-budgets">
+        <svg-icon name="piggy-bank" style="width:28px;height:28px;color:var(--text-muted)"></svg-icon>
+        <p>No budgets set for {{ currentMonth }}</p>
+        <button *ngIf="isAdmin" class="btn btn-secondary btn-sm" (click)="showForm = true">
+          Set your first budget
+        </button>
+        <p *ngIf="!isAdmin" class="viewer-hint">Switch to Admin role to add budgets</p>
+      </div>
+    </ng-template>
+  </div>
+
+</div>
