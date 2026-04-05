@@ -1,0 +1,97 @@
+<div class="insights-page">
+
+  <!-- Header -->
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">Insights</h1>
+      <p class="page-sub">Spending patterns, trends, and smart observations</p>
+    </div>
+  </div>
+
+  <!-- Insight Cards -->
+  <div class="insights-grid">
+    <div
+      class="insight-card"
+      *ngFor="let ins of insights; let i = index"
+      [class]="ins.type"
+      [style.animation-delay]="(i * 0.06) + 's'"
+    >
+      <div class="insight-icon">
+        <svg-icon [name]="ins.icon" style="width:20px;height:20px"></svg-icon>
+      </div>
+      <div class="insight-body">
+        <p class="insight-title">{{ ins.title }}</p>
+        <p class="insight-value">{{ ins.value }}</p>
+        <p class="insight-desc">{{ ins.description }}</p>
+      </div>
+      <div class="insight-badge">
+        <svg-icon [name]="ins.type === 'positive' ? 'check' : ins.type === 'warning' ? 'alert' : 'activity'" style="width:13px;height:13px"></svg-icon>
+      </div>
+    </div>
+  </div>
+
+  <!-- Charts Row -->
+  <div class="charts-row">
+    <div class="card chart-card">
+      <h3 class="section-title">Monthly Comparison</h3>
+      <p class="section-sub">Income vs Expenses — all recorded months</p>
+      <div class="chart-wrap"><canvas #barChart></canvas></div>
+    </div>
+    <div class="card chart-card">
+      <h3 class="section-title">Net Savings Trend</h3>
+      <p class="section-sub">Monthly surplus or deficit over time</p>
+      <div class="chart-wrap"><canvas #areaChart></canvas></div>
+    </div>
+  </div>
+
+  <!-- All-Time Category Breakdown -->
+  <div class="card" *ngIf="categoryBreakdown.length">
+    <h3 class="section-title">All-Time All-Time Spending by Category</h3>
+    <p class="section-sub">Aggregated across all recorded transactions</p>
+
+    <div class="cat-table">
+      <div class="cat-table-header">
+        <span>Category</span>
+        <span>Total Spent</span>
+        <span>Share</span>
+        <span class="hide-mobile">Distribution</span>
+      </div>
+      <div class="cat-table-row" *ngFor="let c of categoryBreakdown">
+        <div class="cat-label-cell">
+          <span class="cat-dot" [style.background]="c.color"></span>
+          {{ c.category }}
+        </div>
+        <span class="cat-amount-cell">₹{{ c.amount.toLocaleString('en-IN') }}</span>
+        <span class="cat-pct-cell">{{ c.percentage }}%</span>
+        <div class="cat-bar-cell hide-mobile">
+          <div class="cat-bar-bg">
+            <div class="cat-bar-fill" [style.width.%]="c.percentage" [style.background]="c.color"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Monthly Summary Table -->
+  <div class="card" *ngIf="monthlyData.length">
+    <h3 class="section-title">Monthly Summary</h3>
+    <p class="section-sub">All recorded months — income, expenses, and net balance</p>
+    <div class="monthly-table">
+      <div class="monthly-header">
+        <span>Month</span>
+        <span>Income</span>
+        <span>Expenses</span>
+        <span>Net Balance</span>
+      </div>
+      <div class="monthly-row" *ngFor="let m of monthlyData.slice().reverse()">
+        <span class="month-name">{{ m.month }}</span>
+        <span class="income-val">₹{{ m.income.toLocaleString('en-IN') }}</span>
+        <span class="expense-val">₹{{ m.expenses.toLocaleString('en-IN') }}</span>
+        <span class="net-val" [class.positive]="m.balance >= 0" [class.negative]="m.balance < 0">
+          {{ m.balance >= 0 ? '+' : '' }}₹{{ m.balance.toLocaleString('en-IN') }}
+        </span>
+      </div>
+    </div>
+  </div>
+
+</div>
