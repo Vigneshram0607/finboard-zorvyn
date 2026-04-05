@@ -1,0 +1,90 @@
+<div class="sidebar">
+  <!-- Logo -->
+  <div class="logo">
+    <div class="logo-icon">
+      <svg-icon name="bar-chart" style="width:18px;height:18px"></svg-icon>
+    </div>
+    <div class="logo-text">
+      <span class="logo-name">FinBoard</span>
+      <span class="logo-tagline">Smart Finance</span>
+    </div>
+  </div>
+
+  <!-- Navigation -->
+  <nav class="nav">
+    <p class="nav-section-label">Menu</p>
+    <button
+      *ngFor="let item of navItems"
+      class="nav-item"
+      [class.active]="currentPath.startsWith(item.path)"
+      (click)="navigate(item.path)"
+    >
+      <span class="nav-icon">
+        <svg-icon [name]="item.icon" style="width:16px;height:16px"></svg-icon>
+      </span>
+      <span>{{ item.label }}</span>
+      <span class="nav-indicator" *ngIf="currentPath.startsWith(item.path)"></span>
+    </button>
+  </nav>
+
+  <div class="spacer"></div>
+
+  <!-- Theme Toggle — prominent card -->
+  <div class="theme-section">
+    <p class="nav-section-label">Appearance</p>
+    <div class="theme-toggle-card">
+      <button
+        class="theme-btn"
+        [class.active]="!isDark"
+        (click)="setTheme('light')"
+        title="Light mode"
+      >
+        <svg-icon name="sun" style="width:15px;height:15px"></svg-icon>
+        Light
+      </button>
+      <button
+        class="theme-btn"
+        [class.active]="isDark"
+        (click)="setTheme('dark')"
+        title="Dark mode"
+      >
+        <svg-icon name="moon" style="width:14px;height:14px"></svg-icon>
+        Dark
+      </button>
+    </div>
+  </div>
+
+  <!-- Quick Actions -->
+  <div class="quick-actions">
+    <p class="nav-section-label">Actions</p>
+    <button class="action-btn" (click)="undoLastAction()" [disabled]="!canUndo" title="Undo (Ctrl+Z)">
+      <svg-icon name="undo" style="width:14px;height:14px"></svg-icon>
+      <span>Undo Last Action</span>
+      <kbd>⌃Z</kbd>
+    </button>
+  </div>
+
+  <!-- Role Switcher -->
+  <div class="role-section">
+    <p class="nav-section-label">Role</p>
+    <div class="role-switcher">
+      <button class="role-btn" [class.active]="role === 'viewer'" (click)="setRole('viewer')">
+        <span class="role-dot viewer"></span> Viewer
+      </button>
+      <button class="role-btn" [class.active]="role === 'admin'" (click)="setRole('admin')">
+        <span class="role-dot admin"></span> Admin
+      </button>
+    </div>
+    <p class="role-hint">{{ role === 'viewer' ? 'Read-only' : 'Full edit access' }}</p>
+  </div>
+
+  <!-- User -->
+  <div class="user-section">
+    <div class="avatar">VR</div>
+    <div class="user-info">
+      <p class="user-name">Vigneshram Venkatesan</p>
+      <p class="user-role">{{ role | titlecase }}</p>
+    </div>
+    <div class="user-online"></div>
+  </div>
+</div>
