@@ -1,0 +1,169 @@
+<div class="dashboard">
+
+  <!-- Page Header -->
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">Dashboard</h1>
+      <p class="page-sub">Financial overview · {{ today | date:'MMMM yyyy' }}</p>
+    </div>
+    <div class="header-actions">
+      <a routerLink="/transactions" class="btn btn-primary" *ngIf="isAdmin">
+        <svg-icon name="plus" style="width:15px;height:15px"></svg-icon>
+        Add Transaction
+      </a>
+    </div>
+  </div>
+
+  <!-- Skeleton -->
+  <div class="summary-grid" *ngIf="isLoading">
+    <div class="card skeleton-card" *ngFor="let i of [1,2,3,4]">
+      <div style="display:flex;justify-content:space-between;margin-bottom:14px">
+        <app-skeleton width="38px" height="38px" [round]="true"></app-skeleton>
+        <app-skeleton width="60px" height="22px"></app-skeleton>
+      </div>
+      <app-skeleton width="150px" height="32px" style="margin-bottom:8px"></app-skeleton>
+      <app-skeleton width="100px" height="12px"></app-skeleton>
+    </div>
+  </div>
+
+  <!-- Summary Cards -->
+  <div class="summary-grid" *ngIf="!isLoading && summary">
+    <app-summary-card label="Total Balance"    [amount]="summary.totalBalance"  icon="wallet"       variant="balance" subLabel="All-time net"></app-summary-card>
+    <app-summary-card label="Monthly Income"   [amount]="summary.totalIncome"   icon="trending-up"  variant="income"  [change]="summary.incomeChange"  subLabel="vs last month"></app-summary-card>
+    <app-summary-card label="Monthly Expenses" [amount]="summary.totalExpenses" icon="trending-down" variant="expense" [change]="summary.expenseChange" subLabel="vs last month"></app-summary-card>
+
+    <!-- Savings Rate Card -->
+    <div class="savings-card card">
+      <div class="savings-top">
+        <div class="savings-icon">
+          <svg-icon name="piggy-bank" style="width:18px;height:18px"></svg-icon>
+        </div>
+        <span class="savings-badge" [class.good]="summary.savingsRate >= 20" [class.warn]="summary.savingsRate < 20">
+          {{ summary.savingsRate }}%
+        </span>
+      </div>
+      <div class="savings-amount">
+        <span class="savings-count" [countUp]="summary.transactionCount"></span>
+      </div>
+      <div class="savings-label">Transactions this month</div>
+      <div class="savings-sub">Savings rate: {{ summary.savingsRate }}%</div>
+      <div class="savings-bar">
+        <div class="savings-fill"
+          [style.width.%]="summary.savingsRate"
+          [style.background]="summary.savingsRate >= 20 ? 'var(--income-color)' : summary.savingsRate >= 0 ? 'var(--accent-gold)' : 'var(--expense-color)'">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Charts Row -->
+  <div class="charts-row">
+    <!-- Trend Line Chart -->
+    <div class="card trend-card">
+      <div class="card-header-row">
+        <div>
+          <h3 class="section-title">Income vs Expenses</h3>
+          <p class="section-sub">6-month trend with net balance</p>
+        </div>
+      </div>
+      <div class="chart-wrap">
+        <canvas #trendChart></canvas>
+      </div>
+    </div>
+
+    <!-- Donut Chart with Month Picker -->
+    <div class="card donut-card">
+      <div class="card-header-row">
+        <div>
+          <h3 class="section-title">Spending Breakdown</h3>
+          <p class="section-sub">By category</p>
+        </div>
+        <!-- Month selector -->
+        <select
+          class="month-select"
+          [value]="selectedBreakdownMonth"
+          (change)="onBreakdownMonthChange($any($event.target).value)"
+          *ngIf="availableMonths.length > 1"
+        >
+          <option *ngFor="let m of availableMonths" [value]="m.key">{{ m.label }}</option>
+        </select>
+      </div>
+
+      <div class="chart-wrap donut-wrap">
+        <div *ngIf="donutBreakdown.length === 0" class="empty-chart">
+          <svg-icon name="inbox" style="width:28px;height:28px;color:var(--text-muted)"></svg-icon>
+          <p>No expense data for {{ selectedBreakdownLabel }}</p>
+        </div>
+        <canvas #donutChart *ngIf="donutBreakdown.length > 0"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bottom Row -->
+  <div class="bottom-row">
+
+    <!-- Recent Transactions -->
+    <div class="card recent-card">
+      <div class="card-header-row">
+        <div>
+          <h3 class="section-title">Recent Transactions</h3>
+          <p class="section-sub">Latest activity</p>
+        </div>
+        <a routerLink="/transactions" class="btn btn-ghost btn-sm">View All →</a>
+      </div>
+
+      <div class="tx-list" *ngIf="recentTransactions.length; else noTx">
+        <div class="tx-item" *ngFor="let tx of recentTransactions; trackBy: trackById">
+          <div class="tx-type-dot" [class]="tx.type"></div>
+          <div class="tx-info">
+            <p class="tx-desc">{{ tx.description }}</p>
+            <p class="tx-cat">{{ CATEGORY_LABELS[tx.category] }} · {{ tx.date | date:'d MMM yyyy' }}</p>
+          </div>
+          <div class="tx-amount" [class]="tx.type">
+            {{ tx.type === 'income' ? '+' : '−' }}₹{{ tx.amount.toLocaleString('en-IN') }}
+          </div>
+        </div>
+      </div>
+      <ng-template #noTx>
+        <div class="empty-mini">
+          <svg-icon name="inbox" style="width:28px;height:28px;color:var(--text-muted)"></svg-icon>
+          <p>No transactions yet</p>
+        </div>
+      </ng-template>
+    </div>
+
+    <!-- Right Column -->
+    <div class="right-col">
+      <!-- Top Categories for selected month -->
+      <div class="card">
+        <h3 class="section-title">Top Categories</h3>
+        <p class="section-sub">{{ selectedBreakdownLabel }} spending</p>
+
+        <div class="cat-list" *ngIf="donutBreakdown.length; else noCat">
+          <div class="cat-item" *ngFor="let c of donutBreakdown | slice:0:5">
+            <span class="cat-dot" [style.background]="c.color"></span>
+            <div class="cat-info">
+              <div class="cat-name-row">
+                <span class="cat-name">{{ c.category }}</span>
+                <span class="cat-pct">{{ c.percentage }}%</span>
+              </div>
+              <div class="cat-bar-bg">
+                <div class="cat-bar-fill" [style.width.%]="c.percentage" [style.background]="c.color"></div>
+              </div>
+            </div>
+            <span class="cat-amt">₹{{ c.amount.toLocaleString('en-IN') }}</span>
+          </div>
+        </div>
+        <ng-template #noCat>
+          <div class="empty-mini"><p>No expense data for {{ selectedBreakdownLabel }}</p></div>
+        </ng-template>
+      </div>
+
+      <!-- Budget Widget -->
+      <div class="card">
+        <app-budget></app-budget>
+      </div>
+    </div>
+
+  </div>
+</div>
