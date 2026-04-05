@@ -1,0 +1,279 @@
+<div class="transactions-page">
+
+  <!-- Header -->
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">Transactions</h1>
+      <p class="page-sub">
+        {{ transactions.length }} of {{ allTransactions.length }} records
+        <span *ngIf="hasActiveFilters" class="filter-active-tag">Filtered</span>
+      </p>
+    </div>
+    <div class="header-actions">
+      <button *ngIf="transactions.length" class="btn btn-secondary" (click)="exportCSV()">
+        <svg-icon name="download" style="width:15px;height:15px"></svg-icon>
+        Export CSV
+      </button>
+      <button *ngIf="isAdmin" class="btn btn-primary add-btn-desktop" (click)="openAddForm()">
+        <svg-icon name="plus" style="width:15px;height:15px"></svg-icon>
+        Add Transaction
+      </button>
+    </div>
+    <!-- <div class="header-actions">
+
+      <div class="export-wrap" *ngIf="transactions.length">
+        <button class="btn btn-secondary" (click)="showExportMenu = !showExportMenu" [class.active]="showExportMenu">
+          <svg-icon name="download" style="width:15px;height:15px"></svg-icon>
+          Export
+        </button>
+        <div class="export-menu" *ngIf="showExportMenu">
+          <button class="export-item" (click)="exportCSV()">
+            <svg-icon name="download" style="width:14px;height:14px"></svg-icon>
+            Download CSV
+          </button>
+          <button class="export-item" (click)="exportJSON()">
+            <svg-icon name="copy" style="width:14px;height:14px"></svg-icon>
+            Download JSON
+          </button>
+        </div>
+      </div>
+
+      <button *ngIf="isAdmin" class="btn btn-primary" (click)="openAddForm()" title="Add Transaction (Ctrl+N)">
+        <svg-icon name="plus" style="width:16px;height:16px"></svg-icon>
+        Add Transaction
+        <kbd class="header-kbd">⌃N</kbd>
+      </button>
+    </div> -->
+  </div>
+
+  <!-- Filters -->
+  <div class="card filters-card">
+    <div class="filters-row">
+      <div class="search-wrap">
+        <svg-icon name="search" class="search-icon" style="width:15px;height:15px"></svg-icon>
+        <input
+          type="text"
+          placeholder="Search transactions…"
+          [value]="filters.search"
+          (input)="setSearch($any($event.target).value)"
+          class="search-input"
+        />
+        <button *ngIf="filters.search" class="clear-btn" (click)="setSearch('')">
+          <svg-icon name="x" style="width:13px;height:13px"></svg-icon>
+        </button>
+      </div>
+
+      <select [value]="filters.type" (change)="setType($any($event.target).value)" class="filter-select">
+        <option value="all">All Types</option>
+        <option value="income">Income</option>
+        <option value="expense">Expense</option>
+      </select>
+
+      <select [value]="filters.category" (change)="setCategory($any($event.target).value)" class="filter-select">
+        <option value="all">All Categories</option>
+        <optgroup label="Income">
+          <option *ngFor="let c of incomeCategories" [value]="c">{{ CATEGORY_LABELS[c] }}</option>
+        </optgroup>
+        <optgroup label="Expense">
+          <option *ngFor="let c of expenseCategories" [value]="c">{{ CATEGORY_LABELS[c] }}</option>
+        </optgroup>
+      </select>
+
+      <input type="date" [value]="filters.dateFrom" (change)="setDateFrom($any($event.target).value)" class="filter-select" title="From date" />
+      <input type="date" [value]="filters.dateTo"   (change)="setDateTo($any($event.target).value)"   class="filter-select" title="To date"   />
+
+      <div class="sort-wrap">
+        <select [value]="filters.sortBy" (change)="setSortBy($any($event.target).value)" class="filter-select sort-select">
+          <option *ngFor="let o of sortOptions" [value]="o.value">{{ o.label }}</option>
+        </select>
+        <button class="sort-dir-btn" (click)="toggleSortDir()" [title]="filters.sortDir === 'asc' ? 'Ascending' : 'Descending'">
+          <svg-icon [name]="filters.sortDir === 'asc' ? 'chevron-up' : 'chevron-down'" style="width:16px;height:16px"></svg-icon>
+        </button>
+      </div>
+
+      <button *ngIf="hasActiveFilters" class="btn btn-ghost reset-btn" (click)="resetFilters()">
+        <svg-icon name="x" style="width:13px;height:13px"></svg-icon>
+        Reset
+      </button>
+    </div>
+  </div>
+
+  <!-- Table Card -->
+  <div class="card table-card">
+
+    <!-- Skeleton Loader -->
+    <div *ngIf="isLoading" class="skeleton-rows">
+      <div class="skeleton-row" *ngFor="let i of [1,2,3,4,5]">
+        <app-skeleton width="80px" height="14px"></app-skeleton>
+        <app-skeleton width="200px" height="14px"></app-skeleton>
+        <app-skeleton width="120px" height="22px" style="border-radius:100px"></app-skeleton>
+        <app-skeleton width="70px" height="22px" style="border-radius:100px"></app-skeleton>
+        <app-skeleton width="90px" height="14px"></app-skeleton>
+      </div>
+    </div>
+
+    <!-- Table -->
+    <ng-container *ngIf="!isLoading">
+      <div class="table-wrap" *ngIf="transactions.length; else emptyState">
+        <table class="tx-table">
+          <thead>
+            <tr>
+              <th (click)="setSortBy('date'); toggleSortDir()" class="sortable">
+                Date
+                <svg-icon *ngIf="filters.sortBy==='date'" [name]="filters.sortDir==='asc' ? 'chevron-up' : 'chevron-down'" style="width:12px;height:12px"></svg-icon>
+              </th>
+              <th (click)="setSortBy('description'); toggleSortDir()" class="sortable">
+                Description
+                <svg-icon *ngIf="filters.sortBy==='description'" [name]="filters.sortDir==='asc' ? 'chevron-up' : 'chevron-down'" style="width:12px;height:12px"></svg-icon>
+              </th>
+              <th>Category</th>
+              <th>Type</th>
+              <th (click)="setSortBy('amount'); toggleSortDir()" class="sortable amount-col">
+                Amount
+                <svg-icon *ngIf="filters.sortBy==='amount'" [name]="filters.sortDir==='asc' ? 'chevron-up' : 'chevron-down'" style="width:12px;height:12px"></svg-icon>
+              </th>
+              <th *ngIf="isAdmin" class="actions-col">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let tx of transactions; trackBy: trackById" class="tx-row">
+              <td class="date-cell">
+                <span class="date-day">{{ tx.date | date:'d MMM' }}</span>
+                <span class="date-year">{{ tx.date | date:'yyyy' }}</span>
+              </td>
+              <td class="desc-cell">
+                <span class="desc-text" [innerHTML]="tx.description | highlight: filters.search"></span>
+                <span class="desc-notes" *ngIf="tx.notes">{{ tx.notes }}</span>
+              </td>
+              <td>
+                <span class="cat-chip">{{ CATEGORY_LABELS[tx.category] }}</span>
+              </td>
+              <td>
+                <span class="badge" [class]="tx.type">
+                  {{ tx.type === 'income' ? '↑' : '↓' }} {{ tx.type | titlecase }}
+                </span>
+              </td>
+              <td class="amount-cell">
+                <span class="amount-val" [class]="tx.type">
+                  {{ tx.type === 'income' ? '+' : '−' }}₹{{ tx.amount.toLocaleString('en-IN') }}
+                </span>
+              </td>
+              <td *ngIf="isAdmin" class="actions-cell">
+                <button class="icon-btn edit" (click)="openEditForm(tx)" title="Edit">
+                  <svg-icon name="edit" style="width:14px;height:14px"></svg-icon>
+                </button>
+                <button class="icon-btn delete" (click)="confirmDelete(tx.id)" title="Delete">
+                  <svg-icon name="trash" style="width:14px;height:14px"></svg-icon>
+                </button>
+              </td>
+            </tr>
+          </tbody>
+          <!-- Footer totals -->
+          <tfoot>
+            <tr class="totals-row">
+              <td colspan="4" class="totals-label">Showing {{ transactions.length }} transactions</td>
+              <td class="totals-amount">
+                <span class="income-total">+₹{{ filteredIncome.toLocaleString('en-IN') }}</span>
+                <span class="expense-total">−₹{{ filteredExpenses.toLocaleString('en-IN') }}</span>
+              </td>
+              <td *ngIf="isAdmin"></td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+
+      <!-- Empty State -->
+      <ng-template #emptyState>
+        <div class="empty-state">
+          <svg-icon name="inbox" style="width:48px;height:48px;color:var(--text-muted)"></svg-icon>
+          <h3>No transactions found</h3>
+          <p>{{ hasActiveFilters ? 'Try adjusting your filters.' : 'Add your first transaction to get started.' }}</p>
+          <button *ngIf="hasActiveFilters" class="btn btn-secondary" (click)="resetFilters()">Clear Filters</button>
+          <button *ngIf="!hasActiveFilters && isAdmin" class="btn btn-primary" (click)="openAddForm()">
+            <svg-icon name="plus" style="width:15px;height:15px"></svg-icon>
+            Add Transaction
+          </button>
+        </div>
+      </ng-template>
+    </ng-container>
+  </div>
+</div>
+
+<!-- Keyboard shortcuts hint -->
+<div class="shortcuts-hint" *ngIf="isAdmin">
+  <svg-icon name="settings" style="width:13px;height:13px"></svg-icon>
+  <kbd>Ctrl+N</kbd> New &nbsp;·&nbsp; <kbd>Ctrl+Z</kbd> Undo
+</div>
+
+<!-- ── Add / Edit Modal ──────────────────────────────────────── -->
+<div class="modal-backdrop" *ngIf="showForm" (click)="closeForm()">
+  <div class="modal" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2>{{ editingId ? 'Edit Transaction' : 'New Transaction' }}</h2>
+      <button class="icon-btn" (click)="closeForm()">
+        <svg-icon name="x" style="width:17px;height:17px"></svg-icon>
+      </button>
+    </div>
+
+    <form [formGroup]="form" (ngSubmit)="submitForm()" class="modal-form">
+      <div class="type-toggle">
+        <button type="button" class="type-btn" [class.active-expense]="form.get('type')?.value === 'expense'" (click)="form.get('type')?.setValue('expense')">
+          <svg-icon name="arrow-down" style="width:13px;height:13px"></svg-icon> Expense
+        </button>
+        <button type="button" class="type-btn" [class.active-income]="form.get('type')?.value === 'income'" (click)="form.get('type')?.setValue('income')">
+          <svg-icon name="arrow-up" style="width:13px;height:13px"></svg-icon> Income
+        </button>
+      </div>
+
+      <div class="form-grid">
+        <div class="form-group" style="grid-column:1/-1">
+          <label>Description *</label>
+          <input formControlName="description" placeholder="e.g. Monthly Salary" [class.error]="isInvalid('description')" />
+          <span class="field-error" *ngIf="isInvalid('description')">Required (min 2 chars)</span>
+        </div>
+        <div class="form-group">
+          <label>Amount (₹) *</label>
+          <input type="number" formControlName="amount" placeholder="0" min="1" [class.error]="isInvalid('amount')" />
+          <span class="field-error" *ngIf="isInvalid('amount')">Enter a valid amount</span>
+        </div>
+        <div class="form-group">
+          <label>Date *</label>
+          <input type="date" formControlName="date" [class.error]="isInvalid('date')" />
+        </div>
+        <div class="form-group" style="grid-column:1/-1">
+          <label>Category *</label>
+          <select formControlName="category">
+            <option *ngFor="let c of availableCategories" [value]="c">{{ CATEGORY_LABELS[c] }}</option>
+          </select>
+        </div>
+        <div class="form-group" style="grid-column:1/-1">
+          <label>Notes (optional)</label>
+          <input formControlName="notes" placeholder="Any additional details…" />
+        </div>
+      </div>
+
+      <div class="modal-actions">
+        <button type="button" class="btn btn-secondary" (click)="closeForm()">Cancel</button>
+        <button type="submit" class="btn btn-primary" [disabled]="form.invalid">
+          <svg-icon name="check" style="width:14px;height:14px"></svg-icon>
+          {{ editingId ? 'Save Changes' : 'Add Transaction' }}
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ── Delete Confirm ────────────────────────────────────────── -->
+<div class="modal-backdrop" *ngIf="deleteConfirmId" (click)="cancelDelete()">
+  <div class="modal confirm-modal" (click)="$event.stopPropagation()">
+    <div class="confirm-icon">
+      <svg-icon name="trash" style="width:22px;height:22px;color:var(--expense-color)"></svg-icon>
+    </div>
+    <h3>Delete Transaction?</h3>
+    <p>You can undo this from the toast notification.</p>
+    <div class="modal-actions">
+      <button class="btn btn-secondary" (click)="cancelDelete()">Cancel</button>
+      <button class="btn btn-danger" (click)="deleteTransaction()">Delete</button>
+    </div>
+  </div>
+</div>
