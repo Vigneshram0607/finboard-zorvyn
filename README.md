@@ -13,24 +13,22 @@
 
 > Assessment submission for **Zorvyn** — A complete financial tracking application featuring real-time analytics, role-based access control, full CRUD operations, dark/light theming, localStorage persistence, and a responsive UI that works seamlessly across every device.
 
-[🚀 Live Demo](https://finboard-zorvyn.vercel.app/dashboard) &nbsp;·&nbsp; [✨ Features](#-features) &nbsp;·&nbsp; [🏗 Architecture](#-architecture) &nbsp;·&nbsp; [🚀 Quick Start](#-quick-start)
-<!-- ·&nbsp; [🎬 Video Walkthrough](#-video-walkthrough) &nbsp; -->
-
+[🚀 Live Demo](https://finboard-zorvyn.vercel.app/dashboard) &nbsp;·&nbsp; [🎬 Video Walkthrough](#-video-walkthrough) &nbsp;·&nbsp; [✨ Features](#-features) &nbsp;·&nbsp; [🏗 Architecture](#-architecture) &nbsp;·&nbsp; [🚀 Quick Start](#-quick-start)
 
 </div>
 
-<!-- --- -->
+---
 
-<!-- ## 🎬 Video Walkthrough -->
+## 🎬 Video Walkthrough
 
-<!-- > 📹 **[Watch full walkthrough on YouTube →](https://youtube.com/your-link-here)**
-> *A 5-minute end-to-end demo — all four pages, Admin/Viewer role switching, dark & light mode, mobile UX, keyboard shortcuts, and the undo system in action.* -->
+> 📹 **[Watch full walkthrough on YouTube →](https://youtu.be/vMP-F7LaAUk)**
+> *A 5-minute end-to-end demo — all four pages, Admin/Viewer role switching, dark & light mode, mobile UX, keyboard shortcuts, and the undo system in action.*
 
 <!-- Replace the GIF below with your recording -->
 <!-- Recommended tools: Loom · Kap (macOS) · ScreenToGif (Windows) · peek (Linux) -->
 <!-- Target size: 900×500 px · 15 fps · under 5 MB -->
 
-<!-- ![FinBoard App Demo](./assets/demo.gif) -->
+![FinBoard App Demo](src/assets/finboard-demo-gif.gif)
 
 ---
 
@@ -41,10 +39,10 @@
 <br>
 
 <!-- Replace with your actual screenshots -->
-![Dashboard Dark Mode](./assets/screenshots/dashboard-dark.png)
+![Dashboard Dark Mode](src/assets/screenshots/dashboard-light-theme.png)
 *Dark mode — animated KPI cards, 6-month trend chart, spending donut, top categories, and the budget widget all in one view*
 
-![Dashboard Light Mode](./assets/screenshots/dashboard-light.png)
+![Dashboard Light Mode](src/assets/screenshots/dashboard-light-theme.png)
 *Light mode — 26 CSS design tokens switch every colour simultaneously, zero page reload*
 
 </details>
@@ -53,10 +51,10 @@
 <summary><strong>💳 Transactions</strong></summary>
 <br>
 
-![Transactions Desktop](./assets/screenshots/transactions-desktop.png)
+![Transactions Desktop](src/assets/screenshots/transaction-light-theme.png)
 *Desktop — fixed-width columns, clickable sort headers, search highlighting, totals footer, and CSV export*
 
-![Transactions Mobile](./assets/screenshots/transactions-mobile.png)
+![Transactions Mobile](src/assets/screenshots/transaction-mobile-light.png)
 *Mobile — the table is fully replaced by a touch-optimised card list. The gold FAB handles adding transactions*
 
 </details>
@@ -65,7 +63,7 @@
 <summary><strong>📊 Insights</strong></summary>
 <br>
 
-![Insights Page](./assets/screenshots/insights.png)
+![Insights Page](src/assets/screenshots/insights-light-theme.png)
 *7 auto-computed insight cards, monthly bar chart, net savings area chart, and the all-time spending breakdown table*
 
 </details>
@@ -74,7 +72,7 @@
 <summary><strong>💰 Budgets</strong></summary>
 <br>
 
-![Budget Page](./assets/screenshots/budget.png)
+![Budget Page](src/assets/screenshots/budget-light-theme.png)
 *Monthly limits per category. Progress bars turn amber at 80%, red when exceeded — with exact overage amounts*
 
 </details>
