@@ -13,22 +13,24 @@
 
 > Assessment submission for **Zorvyn** — A complete financial tracking application featuring real-time analytics, role-based access control, full CRUD operations, dark/light theming, localStorage persistence, and a responsive UI that works seamlessly across every device.
 
-[🚀 Live Demo](https://finboard-zorvyn.vercel.app/dashboard) &nbsp;·&nbsp; [🎬 Video Walkthrough](#-video-walkthrough) &nbsp;·&nbsp; [✨ Features](#-features) &nbsp;·&nbsp; [🏗 Architecture](#-architecture) &nbsp;·&nbsp; [🚀 Quick Start](#-quick-start)
+[🚀 Live Demo](https://finboard-zorvyn.vercel.app/dashboard) &nbsp;·&nbsp; [✨ Features](#-features) &nbsp;·&nbsp; [🏗 Architecture](#-architecture) &nbsp;·&nbsp; [🚀 Quick Start](#-quick-start)
+<!-- ·&nbsp; [🎬 Video Walkthrough](#-video-walkthrough) &nbsp; -->
+
 
 </div>
 
----
+<!-- --- -->
 
-## 🎬 Video Walkthrough
+<!-- ## 🎬 Video Walkthrough -->
 
-> 📹 **[Watch full walkthrough on YouTube →](https://youtube.com/your-link-here)**
-> *A 5-minute end-to-end demo — all four pages, Admin/Viewer role switching, dark & light mode, mobile UX, keyboard shortcuts, and the undo system in action.*
+<!-- > 📹 **[Watch full walkthrough on YouTube →](https://youtube.com/your-link-here)**
+> *A 5-minute end-to-end demo — all four pages, Admin/Viewer role switching, dark & light mode, mobile UX, keyboard shortcuts, and the undo system in action.* -->
 
 <!-- Replace the GIF below with your recording -->
 <!-- Recommended tools: Loom · Kap (macOS) · ScreenToGif (Windows) · peek (Linux) -->
 <!-- Target size: 900×500 px · 15 fps · under 5 MB -->
 
-![FinBoard App Demo](./assets/demo.gif)
+<!-- ![FinBoard App Demo](./assets/demo.gif) -->
 
 ---
 
